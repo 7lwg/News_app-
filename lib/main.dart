@@ -1,14 +1,48 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_ahmed_othman_alhalwagy/data/Cubits/cubit/get_news_cubit.dart';
+import 'package:news_app_ahmed_othman_alhalwagy/firebase_options.dart';
 import 'package:news_app_ahmed_othman_alhalwagy/screens/first_screen.dart';
 import 'package:news_app_ahmed_othman_alhalwagy/screens/presentation_screen.dart';
-// import 'package:news_app_ahmed_othman_alhalwagy/screens/first_screen.dart';
-// import 'package:news_app_ahmed_othman_alhalwagy/screens/fourth_screen.dart';
-// import 'package:news_app_ahmed_othman_alhalwagy/screens/second_screen.dart';
-// import 'package:news_app_ahmed_othman_alhalwagy/screens/third_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-void main() {
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  // await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // NotificationSettings settings = await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
   runApp(const MyApp());
 }
 
